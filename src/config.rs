@@ -55,10 +55,6 @@ impl Config {
         }
 
         let base_value = size[..size.len() - 1].parse::<usize>().map_err(|_| format!("ccdd: invalid block size {}", size))?;
-        if base_value >= constants::MAX_BLOCK_SIZE || base_value == 0 {
-            return Err(format!("ccdd: invalid block size: {}", size));
-        }
-
         let multiplier_value = match multiplier {
             "c" => 1,
             "k" | "K" => 1024,
@@ -66,8 +62,13 @@ impl Config {
             "G" => 1024 * 1024 * 1024,
             _ => return Err(format!("ccdd: invalid block size multiplier {}", multiplier))
         };
-
-        Ok(base_value * multiplier_value)
+        
+        let final_value = base_value.checked_mul(multiplier_value).ok_or_else(|| format!("ccdd: block size too large: {}", size))?;
+        if final_value >= constants::MAX_BLOCK_SIZE || final_value == 0 {
+            return Err(format!("ccdd: invalid block size: {}", size));
+        }
+        
+        Ok(final_value)
     }
 
     pub fn get_ibs(&self) -> usize {
