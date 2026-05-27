@@ -56,7 +56,7 @@ impl Config {
 
         let base_value = size[..size.len() - 1].parse::<usize>().map_err(|_| format!("ccdd: invalid block size {}", size))?;
         let multiplier_value = match multiplier {
-            "c" => 1,
+            "c" | "b" => 1,
             "w" => 8,
             "k" | "K" => 1024,
             "M" => 1024 * 1024,
