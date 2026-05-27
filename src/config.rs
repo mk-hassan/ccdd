@@ -57,6 +57,7 @@ impl Config {
         let base_value = size[..size.len() - 1].parse::<usize>().map_err(|_| format!("ccdd: invalid block size {}", size))?;
         let multiplier_value = match multiplier {
             "c" => 1,
+            "w" => 8,
             "k" | "K" => 1024,
             "M" => 1024 * 1024,
             "G" => 1024 * 1024 * 1024,
@@ -67,7 +68,7 @@ impl Config {
         if final_value >= constants::MAX_BLOCK_SIZE || final_value == 0 {
             return Err(format!("ccdd: invalid block size: {}", size));
         }
-        
+
         Ok(final_value)
     }
 
